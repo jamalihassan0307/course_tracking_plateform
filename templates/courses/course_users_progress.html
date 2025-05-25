@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load course_tags %}
+{% block title %}Student Progress - {{ course.title }} - CourseTrack{% endblock %}
+{% block extra_css %}
+    <style>
+    .progress-header {
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.9), rgba(58, 12, 163, 0.95));
+        position: relative;
+        overflow: hidden;
+        color: white;
+        padding: 4rem 0 2rem;
+    }
+    
+    .progress-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('{% static "images/pattern-dots.svg" %}') center/30px repeat;
+        opacity: 0.1;
+        z-index: 0;
+    }
+    
+    .progress-content {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .progress-bar {
+        height: 8px;
+        border-radius: 4px;
+    }
+    
+    .module-card {
+        border-left: 3px solid transparent;
+        transition: all 0.2s ease;
+    }
+    
+    .module-card:hover {
+        border-left-color: #4361ee;
+        box-shadow: 0 .25rem .75rem rgba(0,0,0,.1) !important;
+    }
+    
+    .module-completed {
+        border-left-color: #28a745;
+    }
+    
+    .module-incomplete {
+        border-left-color: #dc3545;
+    }
+    
+    .student-card {
+        border-radius: 1rem;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .student-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.1) !important;
+    }
+    
+    .tab-pane {
+        padding: 2rem 0;
+    }
+    
+    .student-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s;
+    }
+    
+    .action-btn:hover {
+        transform: scale(1.1);
+    }
+    </style>
+{% endblock %}
+{% block content %}
+    <!-- Progress Header -->
+    <section class="progress-header">
+        <div class="container progress-content">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-2">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'instructor_dashboard' %}" class="text-white-50">Dashboard</a>
+                            </li>
+                            <li class="breadcrumb-item active text-white">{{ course.title }}</li>
+                        </ol>
+                    </nav>
+                    <h1 class="fw-bold mb-2">Student Progress</h1>
+                    <p class="lead mb-0">Track and manage student progress for {{ course.title }}</p>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                    <a href="{% url 'course_detail' course.id %}" class="btn btn-light">
+                        <i class="fas fa-book me-2"></i>View Course
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Progress Content -->
+    <section class="py-5">
+        <div class="container">
+            {% if enrollments %}
+                <!-- Course Info -->
+                <div class="card shadow-sm mb-5">
+                    <div class="card-body p-4">
+                        <h2 class="fw-bold mb-3">Course Overview</h2>
+                        <div class="row">
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                                        <i class="fas fa-users text-primary fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="fs-4 fw-bold mb-0">{{ enrollments.count }}</h3>
+                                        <p class="text-muted mb-0">Enrolled Students</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                                        <i class="fas fa-layer-group text-success fs-4"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="fs-4 fw-bold mb-0">{{ modules.count }}</h3>
+                                        <p class="text-muted mb-0">Total Modules</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 me-3">
+                                        <i class="fas fa-check-circle text-warning fs-4"></i>
+                                    </div>
+                                    <div>
+                                        {% with completed_count=0 %}
+                                            {% for data in student_progress.values %}
+                                                {% if data.is_completed %}
+                                                    {% with completed_count=completed_count|add:1 %}{% endwith %}
+                                                {% endif %}
+                                            {% endfor %}
+                                            <h3 class="fs-4 fw-bold mb-0">{{ completed_count }}</h3>
+                                        {% endwith %}
+                                        <p class="text-muted mb-0">Completed Students</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Student Progress Table -->
+                <div class="card shadow-sm mb-5">
+                    <div class="card-body p-4">
+                        <h2 class="fw-bold mb-4">Student Progress</h2>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th scope="col">Student</th>
+                                        <th scope="col">Progress</th>
+                                        <th scope="col">Enrolled On</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for enrollment in enrollments %}
+                                        {% with progress=student_progress|get_item:enrollment.student.id %}
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        {% if enrollment.student.profile.profile_image %}
+                                                            <img src="{{ enrollment.student.profile.profile_image.url }}"
+                                                                 alt="{{ enrollment.student.username }}"
+                                                                 class="student-avatar me-2"
+                                                                 width="40"
+                                                                 height="40">
+                                                        {% else %}
+                                                            <img src="{% static 'images/default-profile.png' %}"
+                                                                 alt="{{ enrollment.student.username }}"
+                                                                 class="student-avatar me-2"
+                                                                 width="40"
+                                                                 height="40">
+                                                        {% endif %}
+                                                        <div>
+                                                            <h6 class="mb-0">{{ enrollment.student.username }}</h6>
+                                                            <span class="text-muted small">{{ enrollment.student.email }}</span>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="align-middle">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="progress flex-grow-1 me-2">
+                                                            <div class="progress-bar bg-primary"
+                                                                 role="progressbar"
+                                                                 style="width: {{ progress.progress_percent }}%"
+                                                                 aria-valuenow="{{ progress.progress_percent }}"
+                                                                 aria-valuemin="0"
+                                                                 aria-valuemax="100"></div>
+                                                        </div>
+                                                        <span>{{ progress.progress_percent|floatformat:0 }}%</span>
+                                                    </div>
+                                                </td>
+                                                <td class="align-middle">{{ enrollment.enrolled_at|date:"M d, Y" }}</td>
+                                                <td class="align-middle">
+                                                    {% if progress.is_completed %}
+                                                        <span class="badge bg-success">Completed</span>
+                                                    {% else %}
+                                                        <span class="badge bg-primary">In Progress</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td class="align-middle">
+                                                    <button type="button"
+                                                            class="btn btn-primary btn-sm"
+                                                            data-bs-toggle="collapse"
+                                                            data-bs-target="#collapse-{{ enrollment.student.id }}"
+                                                            aria-expanded="false"
+                                                            aria-controls="collapse-{{ enrollment.student.id }}">
+                                                        <i class="fas fa-edit me-1"></i> Manage
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5" class="p-0 border-0">
+                                                    <div class="collapse" id="collapse-{{ enrollment.student.id }}">
+                                                        <div class="card card-body border-0">
+                                                            <h5 class="mb-3">Modules Progress for {{ enrollment.student.username }}</h5>
+                                                            <div class="row">
+                                                                {% for module in modules %}
+                                                                    <div class="col-lg-6 mb-3">
+                                                                        <div class="card module-card shadow-sm {% if module.id in progress.completed_modules %}module-completed{% else %}module-incomplete{% endif %}">
+                                                                            <div class="card-body">
+                                                                                <div class="d-flex justify-content-between">
+                                                                                    <h6 class="mb-2">{{ module.title }}</h6>
+                                                                                    <div>
+                                                                                        {% if module.id in progress.completed_modules %}
+                                                                                            <form method="post" class="d-inline">
+                                                                                                {% csrf_token %}
+                                                                                                <input type="hidden" name="student_id" value="{{ enrollment.student.id }}">
+                                                                                                <input type="hidden" name="module_id" value="{{ module.id }}">
+                                                                                                <input type="hidden" name="action" value="mark_incomplete">
+                                                                                                <button type="submit"
+                                                                                                        class="btn btn-danger action-btn"
+                                                                                                        title="Mark as incomplete">
+                                                                                                    <i class="fas fa-times"></i>
+                                                                                                </button>
+                                                                                            </form>
+                                                                                        {% else %}
+                                                                                            <form method="post" class="d-inline">
+                                                                                                {% csrf_token %}
+                                                                                                <input type="hidden" name="student_id" value="{{ enrollment.student.id }}">
+                                                                                                <input type="hidden" name="module_id" value="{{ module.id }}">
+                                                                                                <input type="hidden" name="action" value="mark_completed">
+                                                                                                <button type="submit"
+                                                                                                        class="btn btn-success action-btn"
+                                                                                                        title="Mark as completed">
+                                                                                                    <i class="fas fa-check"></i>
+                                                                                                </button>
+                                                                                            </form>
+                                                                                        {% endif %}
+                                                                                    </div>
+                                                                                </div>
+                                                                                <p class="text-muted mb-0 small">{{ module.description|truncatechars:80 }}</p>
+                                                                                <div class="mt-2">
+                                                                                    {% if module.id in progress.completed_modules %}
+                                                                                        <span class="badge bg-success">Completed</span>
+                                                                                    {% else %}
+                                                                                        <span class="badge bg-secondary">Incomplete</span>
+                                                                                    {% endif %}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endwith %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <!-- No students state -->
+                <div class="text-center py-5">
+                    <img src="{% static 'images/no-students.svg' %}"
+                         alt="No students"
+                         class="img-fluid mb-4"
+                         width="250"
+                         height="200">
+                    <h3 class="fw-bold mb-3">No students enrolled yet</h3>
+                    <p class="text-muted mb-4">Once students enroll in this course and are approved, they will appear here.</p>
+                    <a href="{% url 'instructor_dashboard' %}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
+{% block extra_js %}
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add any additional JavaScript functionality here
+});
+    </script>
+{% endblock %}

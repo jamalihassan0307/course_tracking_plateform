@@ -1,0 +1,543 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}CourseTrack - Learn and Grow{% endblock %}
+{% block extra_css %}
+    <style>
+    /* Home page specific styles */
+    .hero-section {
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.95), rgba(58, 12, 163, 0.85)), 
+                    url('https://cdn.pixabay.com/photo/2015/07/17/22/43/student-849825_1280.jpg') no-repeat center/cover;
+        color: white;
+        padding: 7rem 0 5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background: url('https://cdn.pixabay.com/photo/2017/07/31/11/44/laptop-2557576_1280.jpg') no-repeat right bottom;
+        opacity: 0.05;
+        z-index: 0;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .hero-image {
+        position: relative;
+        z-index: 2;
+        transition: all 0.5s ease;
+    }
+    
+    .hero-image:hover {
+        transform: translateY(-10px);
+    }
+    
+    .card-hover {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+    }
+    
+    .section-title {
+        position: relative;
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .section-title:after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(to right, #4361ee, #3a0ca3);
+    }
+    
+    .section-title.text-center:after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .feature-icon-circle {
+        width: 80px;
+        height: 80px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .card:hover .feature-icon-circle {
+        transform: scale(1.1);
+        background-color: rgba(67, 97, 238, 0.2) !important;
+    }
+    
+    .testimonial-card {
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.08);
+    }
+    
+    .testimonial-quote {
+        position: relative;
+        padding-left: 2rem;
+    }
+    
+    .testimonial-quote:before {
+        content: '"';
+        position: absolute;
+        left: 0;
+        top: -1rem;
+        font-size: 4rem;
+        font-family: Georgia, serif;
+        opacity: 0.2;
+        line-height: 1;
+    }
+    
+    .carousel-custom-indicators {
+        bottom: -3rem;
+    }
+    
+    .carousel-custom-indicators [data-bs-target] {
+        background-color: #4361ee;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+    }
+    
+    .course-card {
+        border: none;
+        border-radius: 1rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.15)!important;
+    }
+    
+    .course-card .card-img-top {
+        height: 180px;
+        object-fit: cover;
+        transition: all 0.5s ease;
+    }
+    
+    .course-card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+    
+    .rating .fas.fa-star {
+        color: #ffc107;
+    }
+    
+    .instructor-img {
+        border-radius: 50%;
+        border: 2px solid white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .stats-badge {
+        background-color: rgba(67, 97, 238, 0.1);
+        color: #4361ee;
+        border-radius: 20px;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-right: 0.5rem;
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, #4361ee, #3a0ca3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cta-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('https://cdn.pixabay.com/photo/2015/07/17/22/43/student-849825_1280.jpg') center/cover no-repeat;
+        opacity: 0.05;
+        z-index: 0;
+    }
+    
+    .wave-shape {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        overflow: hidden;
+        line-height: 0;
+        transform: rotate(180deg);
+        z-index: 1;
+    }
+    
+    .wave-shape svg {
+        position: relative;
+        display: block;
+        width: calc(100% + 1.3px);
+        height: 94px;
+    }
+    
+    .wave-shape .shape-fill {
+        fill: #FFFFFF;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container hero-content">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0"
+                     data-aos="fade-right"
+                     data-aos-delay="100">
+                    <span class="badge bg-light text-primary px-3 py-2 mb-3 fw-normal">The Learning Platform You'll Love</span>
+                    <h1 class="display-4 fw-bold mb-4">Transform Your Learning Journey</h1>
+                    <p class="lead mb-4 opacity-90">
+                        Discover expert-led courses designed to help you master new skills and advance your career in a supportive learning environment.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="{% url 'course_list' %}" class="btn btn-light btn-lg shadow-sm">
+                            <i class="fas fa-search me-2"></i>Browse Courses
+                        </a>
+                        {% if not user.is_authenticated %}
+                            <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Join Now
+                            </a>
+                        {% endif %}
+                    </div>
+                    <div class="mt-4 d-flex align-items-center">
+                        <div class="d-flex">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg"
+                                 alt="Student"
+                                 class="rounded-circle border border-3 border-white"
+                                 width="40"
+                                 height="40">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg"
+                                 alt="Student"
+                                 class="rounded-circle border border-3 border-white ms-n2"
+                                 width="40"
+                                 height="40">
+                            <img src="https://randomuser.me/api/portraits/men/67.jpg"
+                                 alt="Student"
+                                 class="rounded-circle border border-3 border-white ms-n2"
+                                 width="40"
+                                 height="40">
+                        </div>
+                        <span class="ms-3 text-light">Join thousands of satisfied learners today</span>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-none d-lg-block text-center"
+                     data-aos="fade-left"
+                     data-aos-delay="300">
+                    <img src="https://cdn.pixabay.com/photo/2017/07/31/11/44/laptop-2557576_1280.jpg"
+                         alt="Learning Illustration"
+                         class="img-fluid rounded-3 shadow hero-image"
+                         width="600"
+                         height="400">
+                </div>
+            </div>
+        </div>
+        <div class="wave-shape">
+            <svg data-name="Layer 1"
+                 xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 1200 120"
+                 preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill">
+                </path>
+            </svg>
+        </div>
+    </section>
+    <!-- Featured Courses Section -->
+    <section class="py-5 my-3">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-lg-8">
+                    <h2 class="section-title fw-bold">Featured Courses</h2>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                    <a href="{% url 'course_list' %}"
+                       class="btn btn-outline-primary rounded-pill">
+                        View All Courses <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="row g-4">
+                {% if top_courses %}
+                    {% for course in top_courses %}
+                        <div class="col-md-6 col-lg-3 mb-4"
+                             data-aos="fade-up"
+                             data-aos-delay="{{ forloop.counter|add:100 }}">
+                            <div class="card course-card h-100 shadow-sm">
+                                <div class="position-relative overflow-hidden">
+                                    {% if course.thumbnail %}
+                                        <img src="{{ course.thumbnail.url }}"
+                                             class="card-img-top"
+                                             alt="{{ course.title }}"
+                                             width="300"
+                                             height="180">
+                                    {% else %}
+                                        <img src="{% static 'images/default-course.jpg' %}"
+                                             class="card-img-top"
+                                             alt="{{ course.title }}"
+                                             width="300"
+                                             height="180">
+                                    {% endif %}
+                                    <span class="badge bg-primary position-absolute top-0 start-0 m-3">Featured</span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="badge bg-light text-primary">{{ course.modules.count }} modules</span>
+                                        <div class="rating">
+                                            {% if course.rating_avg %}
+                                                {% for i in "12345" %}
+                                                    {% if forloop.counter <= course.rating_avg|floatformat:"0" %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <span class="ms-1 text-muted">({{ course.rating_avg|floatformat:"1" }})</span>
+                                            {% else %}
+                                                <span class="text-muted">No ratings yet</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <h5 class="card-title fw-bold">{{ course.title }}</h5>
+                                    <p class="card-text text-muted">{{ course.description|truncatechars:80 }}</p>
+                                    <div class="course-instructor d-flex align-items-center mt-3">
+                                        {% if course.instructor.profile.profile_image %}
+                                            <img src="{{ course.instructor.profile.profile_image.url }}"
+                                                 alt="{{ course.instructor.username }}"
+                                                 class="instructor-img me-2"
+                                                 width="30"
+                                                 height="30">
+                                        {% else %}
+                                            <img src="{% static 'images/default-profile.png' %}"
+                                                 alt="{{ course.instructor.username }}"
+                                                 class="instructor-img me-2"
+                                                 width="30"
+                                                 height="30">
+                                        {% endif %}
+                                        <small class="text-muted">{{ course.instructor.username }}</small>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-white border-0 pt-0">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="stats-badge">
+                                            <i class="fas fa-users me-1"></i> {{ course.students_count|default:"0" }}
+                                        </span>
+                                        <span class="stats-badge">
+                                            <i class="fas fa-layer-group me-1"></i> {{ course.modules.count }}
+                                        </span>
+                                    </div>
+                                    <a href="{% url 'course_detail' course.id %}"
+                                       class="btn btn-primary w-100 rounded-pill">View Course</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12 text-center py-5">
+                        <p class="lead text-muted">No courses available yet. Check back soon!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    <!-- Features Section -->
+    <section class="py-5 bg-light my-3 position-relative">
+        <div class="container">
+            <h2 class="section-title fw-bold mb-5 text-center">Why Choose CourseTrack?</h2>
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card card-hover text-center h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon-circle bg-primary bg-opacity-10 rounded-circle mx-auto mb-4">
+                                <i class="fas fa-laptop-code text-primary fs-3"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3">Expert Instructors</h4>
+                            <p class="text-muted mb-0">
+                                Learn from industry professionals who bring real-world experience to their teaching, ensuring you get practical knowledge.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card card-hover text-center h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon-circle bg-primary bg-opacity-10 rounded-circle mx-auto mb-4">
+                                <i class="fas fa-chart-line text-primary fs-3"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3">Track Progress</h4>
+                            <p class="text-muted mb-0">
+                                Monitor your learning journey with detailed progress tracking on each course, helping you stay motivated and on track.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card card-hover text-center h-100 border-0 shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="feature-icon-circle bg-primary bg-opacity-10 rounded-circle mx-auto mb-4">
+                                <i class="fas fa-certificate text-primary fs-3"></i>
+                            </div>
+                            <h4 class="fw-bold mb-3">Get Certified</h4>
+                            <p class="text-muted mb-0">
+                                Earn certificates upon course completion to showcase your new skills to employers and advance your career.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Testimonials Section -->
+    <section class="py-5 my-3">
+        <div class="container">
+            <h2 class="section-title fw-bold mb-5 text-center">What Our Students Say</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div id="testimonialsCarousel"
+                         class="carousel slide"
+                         data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="testimonial-card p-4 shadow-sm">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <img src="https://randomuser.me/api/portraits/women/65.jpg"
+                                             alt="Student"
+                                             class="rounded-circle shadow-sm"
+                                             width="70"
+                                             height="70">
+                                        <div class="ms-3">
+                                            <h5 class="mb-1 fw-bold">Sarah Johnson</h5>
+                                            <div class="rating mb-1">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                            </div>
+                                            <span class="badge bg-light text-primary">Marketing Professional</span>
+                                        </div>
+                                    </div>
+                                    <p class="testimonial-quote lead mb-0">
+                                        "CourseTrack has transformed my career. The courses are well-structured and the instructors are incredibly knowledgeable. I've gained skills that I use every day at work."
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="testimonial-card p-4 shadow-sm">
+                                    <div class="d-flex align-items-center mb-4">
+                                        <img src="https://randomuser.me/api/portraits/men/22.jpg"
+                                             alt="Student"
+                                             class="rounded-circle shadow-sm"
+                                             width="70"
+                                             height="70">
+                                        <div class="ms-3">
+                                            <h5 class="mb-1 fw-bold">Michael Chen</h5>
+                                            <div class="rating mb-1">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star-half-alt"></i>
+                                            </div>
+                                            <span class="badge bg-light text-primary">Software Engineer</span>
+                                        </div>
+                                    </div>
+                                    <p class="testimonial-quote lead mb-0">
+                                        "The quality of instruction on CourseTrack is outstanding. I was able to learn new programming languages and frameworks that directly led to a promotion at work."
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center mt-4">
+                            <button class="carousel-control-prev position-relative mx-2"
+                                    type="button"
+                                    data-bs-target="#testimonialsCarousel"
+                                    data-bs-slide="prev">
+                                <span class="btn btn-primary btn-sm rounded-circle">
+                                    <i class="fas fa-chevron-left"></i>
+                                </span>
+                                <span class="visually-hidden">Previous</span>
+                            </button>
+                            <button class="carousel-control-next position-relative mx-2"
+                                    type="button"
+                                    data-bs-target="#testimonialsCarousel"
+                                    data-bs-slide="next">
+                                <span class="btn btn-primary btn-sm rounded-circle">
+                                    <i class="fas fa-chevron-right"></i>
+                                </span>
+                                <span class="visually-hidden">Next</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Call to Action -->
+    <section class="py-5 cta-section text-white position-relative">
+        <div class="container text-center position-relative cta-content">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h2 class="fw-bold display-5 mb-3">Ready to Start Learning?</h2>
+                    <p class="lead mb-4 opacity-90">
+                        Join thousands of students who are already enhancing their skills and advancing their careers with CourseTrack.
+                    </p>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <a href="{% url 'course_list' %}" class="btn btn-light btn-lg shadow">
+                            <i class="fas fa-search me-2"></i>Explore Courses
+                        </a>
+                        {% if not user.is_authenticated %}
+                            <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Sign Up Free
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+{% block extra_js %}
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize AOS animation library if it exists
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+    }
+    
+    // Add any additional JavaScript for the home page
+});
+    </script>
+{% endblock %}

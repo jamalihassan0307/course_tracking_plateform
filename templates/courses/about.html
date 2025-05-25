@@ -1,0 +1,511 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}About Us - CourseTrack{% endblock %}
+{% block extra_css %}
+    <style>
+    /* About page specific styles */
+    .about-hero {
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.9), rgba(58, 12, 163, 0.85)),
+                    url('{% static "images/about-bg.jpg" %}') no-repeat center/cover;
+        color: white;
+        padding: 7rem 0 5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .about-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('{% static "images/about-hero.svg" %}') no-repeat right center;
+        background-size: 50%;
+        opacity: 0.05;
+        z-index: 0;
+    }
+    
+    .about-hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .section-title {
+        position: relative;
+        padding-bottom: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(to right, #4361ee, #3a0ca3);
+    }
+    
+    .section-title.text-center::after {
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    .timeline {
+        position: relative;
+        padding: 2rem 0;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        height: 100%;
+        width: 2px;
+        background: rgba(67, 97, 238, 0.2);
+        left: 50%;
+        transform: translateX(-50%);
+        top: 0;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 3rem;
+    }
+    
+    .timeline-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #4361ee;
+        left: 50%;
+        transform: translateX(-50%);
+        top: 15px;
+        z-index: 2;
+    }
+    
+    .timeline-content {
+        width: calc(50% - 30px);
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.08);
+        position: relative;
+        background: white;
+        transition: all 0.3s ease;
+    }
+    
+    .timeline-content:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 2rem rgba(0,0,0,.15);
+    }
+    
+    .timeline-item:nth-child(odd) .timeline-content {
+        float: right;
+    }
+    
+    .timeline-item:nth-child(even) .timeline-content {
+        float: left;
+        text-align: right;
+    }
+    
+    .timeline-date {
+        display: inline-block;
+        margin-bottom: 0.5rem;
+        background: rgba(67, 97, 238, 0.1);
+        color: #4361ee;
+        padding: 0.3rem 1rem;
+        border-radius: 2rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    
+    .value-card {
+        border-radius: 1rem;
+        overflow: hidden;
+        border: none;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .value-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.15)!important;
+    }
+    
+    .value-card:hover .value-icon {
+        transform: scale(1.1);
+    }
+    
+    .value-icon {
+        width: 80px;
+        height: 80px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+    }
+    
+    .team-card {
+        border-radius: 1rem;
+        overflow: hidden;
+        border: none;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .team-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.15)!important;
+    }
+    
+    .team-img {
+        width: 140px;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.08);
+        transition: all 0.3s ease;
+    }
+    
+    .team-card:hover .team-img {
+        transform: scale(1.05);
+    }
+    
+    .social-links a {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(67, 97, 238, 0.1);
+        color: #4361ee;
+        border-radius: 50%;
+        margin: 0 0.25rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .social-links a:hover {
+        background: #4361ee;
+        color: white;
+        transform: translateY(-3px);
+    }
+    
+    .cta-section {
+        background: linear-gradient(135deg, #4361ee, #3a0ca3);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('https://cdn.pixabay.com/photo/2015/07/17/22/43/student-849825_1280.jpg') center/cover no-repeat;
+        opacity: 0.05;
+        z-index: 0;
+    }
+    
+    .cta-content {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .wave-shape {
+        position: absolute;
+        top: -2px;
+        left: 0;
+        width: 100%;
+        overflow: hidden;
+        line-height: 0;
+        z-index: 1;
+    }
+    
+    .wave-shape svg {
+        position: relative;
+        display: block;
+        width: calc(100% + 1.3px);
+        height: 94px;
+    }
+    
+    .wave-shape .shape-fill {
+        fill: #FFFFFF;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+    <!-- About Hero Section -->
+    <section class="about-hero">
+        <div class="container about-hero-content">
+            <div class="row align-items-center">
+                <div class="col-lg-6" data-aos="fade-right" data-aos-delay="100">
+                    <span class="badge bg-light text-primary px-3 py-2 mb-3 fw-normal">Our Mission & Vision</span>
+                    <h1 class="fw-bold display-4 mb-4">About CourseTrack</h1>
+                    <p class="lead mb-4 opacity-90">
+                        Empowering individuals through quality education and skills development that transforms careers and lives.
+                    </p>
+                    <p class="mb-5 opacity-90">
+                        CourseTrack is a leading online learning platform committed to providing high-quality education that is accessible, affordable, and effective. We believe that education should be available to everyone, regardless of their background or location.
+                    </p>
+                    <div class="d-flex align-items-center">
+                        <div class="me-4 text-center">
+                            <div class="display-4 fw-bold">5k+</div>
+                            <div class="text-white-50">Students</div>
+                        </div>
+                        <div class="me-4 text-center">
+                            <div class="display-4 fw-bold">100+</div>
+                            <div class="text-white-50">Courses</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="display-4 fw-bold">50+</div>
+                            <div class="text-white-50">Instructors</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 d-none d-lg-block text-center"
+                     data-aos="fade-left"
+                     data-aos-delay="300">
+                    <img src="{% static 'images/about-hero.svg' %}"
+                         alt="About CourseTrack"
+                         class="img-fluid rounded shadow-lg"
+                         width="500"
+                         height="350">
+                </div>
+            </div>
+        </div>
+        <div class="wave-shape">
+            <svg data-name="Layer 1"
+                 xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 1200 120"
+                 preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill" fill="#ffffff">
+                </path>
+            </svg>
+        </div>
+    </section>
+    <!-- Our Story Section -->
+    <section class="py-5 my-3">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="section-title fw-bold text-center">Our Story</h2>
+                </div>
+            </div>
+            <div class="timeline">
+                <div class="clearfix timeline-item" data-aos="fade-right">
+                    <div class="timeline-content">
+                        <span class="timeline-date">2021</span>
+                        <h4 class="fw-bold mb-3">The Beginning</h4>
+                        <p class="mb-0">
+                            CourseTrack began with a simple vision: to create a world where anyone, anywhere can transform their life through quality education. Founded by a team of educators and technologists passionate about making learning accessible.
+                        </p>
+                    </div>
+                </div>
+                <div class="clearfix timeline-item" data-aos="fade-left">
+                    <div class="timeline-content">
+                        <span class="timeline-date">2022</span>
+                        <h4 class="fw-bold mb-3">Growth & Expansion</h4>
+                        <p class="mb-0">
+                            What started as a small collection of courses expanded into a diverse platform, attracting instructors from various industries and disciplines to share their expertise with learners worldwide.
+                        </p>
+                    </div>
+                </div>
+                <div class="clearfix timeline-item" data-aos="fade-right">
+                    <div class="timeline-content">
+                        <span class="timeline-date">2023</span>
+                        <h4 class="fw-bold mb-3">Innovation & Recognition</h4>
+                        <p class="mb-0">
+                            With our unique focus on progress tracking and personalized learning paths, CourseTrack gained recognition as a top educational platform, helping thousands of students advance their careers and develop new skills.
+                        </p>
+                    </div>
+                </div>
+                <div class="clearfix timeline-item" data-aos="fade-left">
+                    <div class="timeline-content">
+                        <span class="timeline-date">Today</span>
+                        <h4 class="fw-bold mb-3">Looking Forward</h4>
+                        <p class="mb-0">
+                            Today, thousands of students from around the world trust CourseTrack for their learning needs. We continue to innovate and expand our offerings, committed to our mission of transforming lives through education.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Our Values Section -->
+    <section class="py-5 bg-light my-3">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="section-title fw-bold text-center">Our Core Values</h2>
+                    <p class="lead text-muted mb-5">The principles that drive everything we do at CourseTrack</p>
+                </div>
+            </div>
+            <div class="row g-4 justify-content-center">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="value-card card h-100 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="value-icon rounded-circle bg-primary bg-opacity-10">
+                                <i class="fas fa-lightbulb text-primary fs-2"></i>
+                            </div>
+                            <h3 class="fw-bold h4 mb-3">Innovation</h3>
+                            <p class="text-muted mb-0">
+                                We embrace new ideas and technologies to continuously improve the learning experience, staying at the forefront of educational advancements.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="value-card card h-100 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="value-icon rounded-circle bg-primary bg-opacity-10">
+                                <i class="fas fa-users text-primary fs-2"></i>
+                            </div>
+                            <h3 class="fw-bold h4 mb-3">Community</h3>
+                            <p class="text-muted mb-0">
+                                We foster a supportive environment where students and instructors can connect, collaborate, and grow together, sharing knowledge and experiences.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="value-card card h-100 shadow-sm">
+                        <div class="card-body text-center p-4">
+                            <div class="value-icon rounded-circle bg-primary bg-opacity-10">
+                                <i class="fas fa-award text-primary fs-2"></i>
+                            </div>
+                            <h3 class="fw-bold h4 mb-3">Excellence</h3>
+                            <p class="text-muted mb-0">
+                                We strive for the highest standards in educational content and platform performance, ensuring a premium learning experience for all our users.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Our Team Section -->
+    <section class="py-5 my-3">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="section-title fw-bold text-center">Meet Our Leadership Team</h2>
+                    <p class="lead text-muted mb-5">The passionate individuals behind CourseTrack's mission</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="team-card card border-0 shadow-sm h-100">
+                        <div class="card-body text-center p-4">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg"
+                                 alt="Team Member"
+                                 class="team-img mb-4"
+                                 width="140"
+                                 height="140">
+                            <h3 class="fw-bold h5 mb-1">Alex Davis</h3>
+                            <p class="text-primary mb-3">Founder & CEO</p>
+                            <p class="text-muted small mb-4">
+                                With over 15 years of experience in education technology, Alex is passionate about making quality education accessible to everyone.
+                            </p>
+                            <div class="social-links">
+                                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                                <a href="#"><i class="fas fa-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="team-card card border-0 shadow-sm h-100">
+                        <div class="card-body text-center p-4">
+                            <img src="https://randomuser.me/api/portraits/women/44.jpg"
+                                 alt="Team Member"
+                                 class="team-img mb-4"
+                                 width="140"
+                                 height="140">
+                            <h3 class="fw-bold h5 mb-1">Samantha Chen</h3>
+                            <p class="text-primary mb-3">Head of Education</p>
+                            <p class="text-muted small mb-4">
+                                As an education specialist with a Ph.D. in Learning Sciences, Samantha ensures our courses meet the highest academic standards.
+                            </p>
+                            <div class="social-links">
+                                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                                <a href="#"><i class="fas fa-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="team-card card border-0 shadow-sm h-100">
+                        <div class="card-body text-center p-4">
+                            <img src="https://randomuser.me/api/portraits/men/67.jpg"
+                                 alt="Team Member"
+                                 class="team-img mb-4"
+                                 width="140"
+                                 height="140">
+                            <h3 class="fw-bold h5 mb-1">Marcus Johnson</h3>
+                            <p class="text-primary mb-3">Chief Technology Officer</p>
+                            <p class="text-muted small mb-4">
+                                Marcus brings over a decade of tech expertise to CourseTrack, leading our engineering team to create an optimal learning platform.
+                            </p>
+                            <div class="social-links">
+                                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#"><i class="fab fa-twitter"></i></a>
+                                <a href="#"><i class="fas fa-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Call to Action -->
+    <section class="py-5 cta-section text-white">
+        <div class="container cta-content text-center">
+            <div class="row justify-content-center">
+                <div class="col-lg-8" data-aos="fade-up">
+                    <h2 class="fw-bold display-5 mb-3">Ready to Join Our Community?</h2>
+                    <p class="lead mb-4 opacity-90">
+                        Start your learning journey with CourseTrack today and become part of our growing community of learners and instructors.
+                    </p>
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <a href="{% url 'course_list' %}" class="btn btn-light btn-lg shadow">
+                            <i class="fas fa-search me-2"></i>Explore Courses
+                        </a>
+                        {% if not user.is_authenticated %}
+                            <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg">
+                                <i class="fas fa-user-plus me-2"></i>Sign Up Free
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+{% block extra_js %}
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize AOS animation library if it exists
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            mirror: false
+        });
+    }
+});
+    </script>
+{% endblock %}

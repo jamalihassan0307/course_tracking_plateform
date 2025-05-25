@@ -1,0 +1,439 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}All Courses - CourseTrack{% endblock %}
+{% block extra_css %}
+    <style>
+    /* Courses page specific styles */
+    .courses-hero {
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.9), rgba(58, 12, 163, 0.85)),
+                    url('https://cdn.pixabay.com/photo/2015/01/08/18/25/desk-593327_1280.jpg') no-repeat center/cover;
+        padding: 5rem 0;
+        position: relative;
+        color: white;
+        overflow: hidden;
+    }
+    
+    .courses-hero::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 50px;
+        bottom: -25px;
+        left: 0;
+        background: white;
+        border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    }
+    
+    .filter-card {
+        border: none;
+        border-radius: 1rem;
+        transition: all 0.3s;
+        overflow: hidden;
+    }
+    
+    .filter-card:hover {
+        box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.1)!important;
+    }
+    
+    .course-card {
+        border: none;
+        border-radius: 1rem;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.15)!important;
+    }
+    
+    .course-card .card-img-top {
+        height: 200px;
+        object-fit: cover;
+        transition: all 0.5s ease;
+    }
+    
+    .course-card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+    
+    .course-card .card-body {
+        padding: 1.5rem;
+    }
+    
+    .course-card .card-footer {
+        background: transparent;
+        border-top: 1px solid rgba(0,0,0,.05);
+        padding: 1rem 1.5rem;
+    }
+    
+    .category-badge {
+        background-color: rgba(67, 97, 238, 0.1);
+        color: #4361ee;
+        border-radius: 20px;
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .category-badge:hover {
+        background-color: #4361ee;
+        color: white;
+    }
+    
+    .instructor-img {
+        border-radius: 50%;
+        border: 2px solid white;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        width: 30px;
+        height: 30px;
+        object-fit: cover;
+    }
+    
+    .course-instructor {
+        display: flex;
+        align-items: center;
+        margin-top: 1rem;
+    }
+    
+    .rating .fas.fa-star {
+        color: #ffc107;
+    }
+    
+    .rating .far.fa-star {
+        color: #e0e0e0;
+    }
+    
+    .stats-badge {
+        background-color: rgba(67, 97, 238, 0.1);
+        color: #4361ee;
+        border-radius: 20px;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-right: 0.5rem;
+        white-space: nowrap;
+    }
+    
+    .search-input {
+        border-radius: 2rem;
+        padding-left: 1rem;
+        border: 1px solid #e0e0e0;
+    }
+    
+    .search-input:focus {
+        border-color: #4361ee;
+        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+    }
+    
+    .filter-btn {
+        border-radius: 2rem;
+        padding: 0.375rem 1.25rem;
+    }
+    
+    .courses-count {
+        background-color: rgba(67, 97, 238, 0.1);
+        color: #4361ee;
+        border-radius: 2rem;
+        padding: 0.375rem 1.25rem;
+        font-weight: 500;
+    }
+    
+    .empty-courses {
+        padding: 5rem 0;
+    }
+    
+    .empty-courses img {
+        max-width: 250px;
+        margin-bottom: 2rem;
+    }
+    
+    .guest-prompt {
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.05), rgba(58, 12, 163, 0.1));
+        border-radius: 1rem;
+        padding: 2rem;
+        margin: 2rem 0;
+        border: 1px dashed rgba(67, 97, 238, 0.3);
+    }
+    
+    .guest-prompt-icon {
+        font-size: 2.5rem;
+        color: #4361ee;
+        margin-bottom: 1rem;
+    }
+    
+    .blur-content {
+        filter: blur(3px);
+        pointer-events: none;
+        user-select: none;
+        opacity: 0.7;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+    <!-- Courses Hero -->
+    <section class="courses-hero">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-7 mx-auto text-center">
+                    <h1 class="fw-bold display-4 mb-3" data-aos="fade-up">Explore Our Courses</h1>
+                    <p class="lead mb-4 opacity-90" data-aos="fade-up" data-aos-delay="100">
+                        Discover a wide range of expert-led courses designed to help you enhance your skills and advance your career.
+                    </p>
+                    <div class="d-flex justify-content-center"
+                         data-aos="fade-up"
+                         data-aos-delay="200">
+                        <form class="d-flex w-100 max-w-md">
+                            <div class="input-group">
+                                <input type="search"
+                                       class="form-control search-input"
+                                       placeholder="Search for courses..."
+                                       aria-label="Search">
+                                <button class="btn btn-light" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Courses List -->
+    <section class="py-5">
+        <div class="container">
+            <!-- Filters Section -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card filter-card shadow-sm">
+                        <div class="card-body p-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-8 mb-3 mb-md-0">
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <span class="courses-count">
+                                            <i class="fas fa-graduation-cap me-1"></i>
+                                            {{ courses.count }} courses available
+                                        </span>
+                                        <div class="dropdown d-inline-block">
+                                            <button class="btn btn-outline-primary filter-btn dropdown-toggle"
+                                                    type="button"
+                                                    id="categoriesDropdown"
+                                                    data-bs-toggle="dropdown"
+                                                    aria-expanded="false">Categories</button>
+                                            <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                                                <li>
+                                                    <a class="dropdown-item" href="#">All Categories</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="#">Development</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="#">Business</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="#">Design</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="#">Marketing</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="dropdown d-inline-block">
+                                            <button class="btn btn-outline-primary filter-btn dropdown-toggle"
+                                                    type="button"
+                                                    id="sortDropdown"
+                                                    data-bs-toggle="dropdown"
+                                                    aria-expanded="false">Sort By</button>
+                                            <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+                                                <li>
+                                                    <a class="dropdown-item" href="#">Most Popular</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="#">Highest Rated</a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item" href="#">Newest</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-md-end">
+                                    {% if user.is_authenticated and user.is_superuser or user.userprofile.role == 'admin' %}
+                                        <a href="{% url 'create_course' %}" class="btn btn-primary">
+                                            <i class="fas fa-plus me-1"></i> Create Course
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if is_guest %}
+                <div class="guest-prompt text-center" data-aos="fade-up">
+                    <div class="guest-prompt-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 class="fw-bold mb-3">Limited Access</h3>
+                    <p class="mb-4">
+                        You're currently viewing our courses as a guest. Sign in to access all courses, view full course details, and enroll in courses.
+                    </p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'login' %}" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                        </a>
+                        <a href="{% url 'register' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-plus me-2"></i>Register
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+            <!-- Courses Grid -->
+            <div class="row g-4 {% if is_guest %}mb-4{% endif %}">
+                {% if courses %}
+                    {% for course in courses %}
+                        <div class="col-md-6 col-lg-4"
+                             data-aos="fade-up"
+                             data-aos-delay="{{ forloop.counter|add:'50'|stringformat:'s' }}">
+                            <div class="card course-card h-100">
+                                <div class="position-relative overflow-hidden">
+                                    {% if course.thumbnail %}
+                                        <img src="{{ course.thumbnail.url }}"
+                                             class="card-img-top"
+                                             alt="{{ course.title }}"
+                                             width="350"
+                                             height="200">
+                                    {% else %}
+                                        <img src="{% static 'images/default-course.jpg' %}"
+                                             class="card-img-top"
+                                             alt="{{ course.title }}"
+                                             width="350"
+                                             height="200">
+                                    {% endif %}
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="category-badge">{{ course.modules.count }} modules</span>
+                                        <div class="rating">
+                                            {% if course.rating_avg %}
+                                                {% for i in "12345" %}
+                                                    {% if forloop.counter <= course.rating_avg|floatformat:"0" %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <span class="ms-1 text-muted">({{ course.rating_avg|floatformat:"1" }})</span>
+                                            {% else %}
+                                                <span class="text-muted small">No ratings yet</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <h5 class="card-title fw-bold">{{ course.title }}</h5>
+                                    <p class="card-text text-muted">{{ course.description|truncatechars:100 }}</p>
+                                    <div class="course-instructor">
+                                        {% if course.instructor.profile.profile_image %}
+                                            <img src="{{ course.instructor.profile.profile_image.url }}"
+                                                 alt="{{ course.instructor.username }}"
+                                                 class="instructor-img me-2"
+                                                 width="30"
+                                                 height="30">
+                                        {% else %}
+                                            <img src="{% static 'images/default-profile.png' %}"
+                                                 alt="{{ course.instructor.username }}"
+                                                 class="instructor-img me-2"
+                                                 width="30"
+                                                 height="30">
+                                        {% endif %}
+                                        <small class="text-muted">{{ course.instructor.username }}</small>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="stats-badge">
+                                            <i class="fas fa-users me-1"></i> {{ course.students_count|default:"0" }}
+                                        </span>
+                                        <span class="stats-badge">
+                                            <i class="fas fa-calendar-alt me-1"></i> {{ course.created_at|date:"M Y" }}
+                                        </span>
+                                    </div>
+                                    <a href="{% url 'course_detail' course.id %}"
+                                       class="btn btn-primary w-100 rounded-pill">View Course</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="col-12">
+                        <div class="empty-courses text-center">
+                            <img src="https://cdn.pixabay.com/photo/2017/06/01/22/42/book-2364756_1280.jpg"
+                                 alt="No courses available"
+                                 class="img-fluid rounded shadow mb-4"
+                                 width="250"
+                                 height="167">
+                            <h3 class="fw-bold mb-3">No Courses Available</h3>
+                            <p class="lead text-muted mb-4">Check back soon for new courses!</p>
+                            {% if user.is_authenticated and user.is_superuser or user.userprofile.role == 'admin' %}
+                                <a href="{% url 'create_course' %}" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-plus me-2"></i> Create First Course
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            {% if is_guest and courses %}
+                <div class="text-center py-4" data-aos="fade-up">
+                    <h4 class="fw-bold mb-3">Want to see more courses?</h4>
+                    <p class="mb-4">Sign in to access our full catalog of {{ courses.count }} courses</p>
+                    <a href="{% url 'login' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-sign-in-alt me-2"></i>Sign In to See All Courses
+                    </a>
+                </div>
+            {% endif %}
+            <!-- Pagination -->
+            {% if not is_guest and courses %}
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <nav aria-label="Course pagination">
+                            <ul class="pagination justify-content-center">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                                </li>
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">1</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">2</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">3</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Next</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
+{% block extra_js %}
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize AOS animation library if it exists
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+    }
+});
+    </script>
+{% endblock %}

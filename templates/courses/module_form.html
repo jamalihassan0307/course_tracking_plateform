@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ title }} - CourseTrack{% endblock %}
+{% block content %}
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'home' %}">Home</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'course_list' %}">Courses</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'course_detail' course.id %}">{{ course.title }}</a>
+                            </li>
+                            {% if module %}
+                                <li class="breadcrumb-item">
+                                    <a href="{% url 'module_detail' course.id module.id %}">{{ module.title }}</a>
+                                </li>
+                            {% endif %}
+                            <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
+                        </ol>
+                    </nav>
+                    <h1 class="fw-bold mb-4">{{ title }}</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body p-4 p-lg-5">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label for="{{ form.title.id_for_label }}" class="form-label">Module Title</label>
+                                    <input type="text"
+                                           name="{{ form.title.name }}"
+                                           id="{{ form.title.id_for_label }}"
+                                           class="form-control {% if form.title.errors %}is-invalid{% endif %}"
+                                           value="{{ form.title.value|default:'' }}">
+                                    {% if form.title.errors %}<div class="invalid-feedback">{{ form.title.errors }}</div>{% endif %}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                                    <textarea name="{{ form.description.name }}"
+                                              id="{{ form.description.id_for_label }}"
+                                              class="form-control {% if form.description.errors %}is-invalid{% endif %}"
+                                              rows="5">{{ form.description.value|default:'' }}</textarea>
+                                    {% if form.description.errors %}
+                                        <div class="invalid-feedback">{{ form.description.errors }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-4">
+                                    <label for="{{ form.order_number.id_for_label }}" class="form-label">Module Order</label>
+                                    <input type="number"
+                                           name="{{ form.order_number.name }}"
+                                           id="{{ form.order_number.id_for_label }}"
+                                           class="form-control {% if form.order_number.errors %}is-invalid{% endif %}"
+                                           value="{{ form.order_number.value|default:'1' }}">
+                                    {% if form.order_number.errors %}<div class="invalid-feedback">{{ form.order_number.errors }}</div>{% endif %}
+                                    <small class="text-muted">This determines the order in which modules appear in the course.</small>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <a href="{% url 'course_detail' course.id %}"
+                                       class="btn btn-outline-secondary">Cancel</a>
+                                    <button type="submit" class="btn btn-primary">
+                                        {% if module %}
+                                            Update Module
+                                        {% else %}
+                                            Create Module
+                                        {% endif %}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

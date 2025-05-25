@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ module.title }} - {{ course.title }} - CourseTrack{% endblock %}
+{% block content %}
+    <!-- Module Header -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'home' %}">Home</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'course_list' %}">Courses</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'course_detail' course.id %}">{{ course.title }}</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ module.title }}</li>
+                        </ol>
+                    </nav>
+                    <h1 class="fw-bold mb-4">{{ module.title }}</h1>
+                    {% if user.is_superuser or user.userprofile.role == 'admin' %}
+                        <div class="mb-3">
+                            <a href="{% url 'update_module' course.id module.id %}"
+                               class="btn btn-outline-primary">
+                                <i class="fas fa-edit me-1"></i> Edit Module
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Module Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row">
+                <!-- Left Sidebar: Module Navigation -->
+                <div class="col-lg-3 mb-4 mb-lg-0">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <h5 class="fw-bold mb-3">Course Modules</h5>
+                            <ul class="module-list">
+                                {% for m in all_modules %}
+                                    <li class="module-item{% if m.id == module.id %} active{% endif %}{% if m.id in user_progress %} completed{% endif %}">
+                                        <a href="{% url 'module_detail' course.id m.id %}"
+                                           class="text-decoration-none{% if m.id == module.id %} text-primary fw-bold{% endif %}">
+                                            {% if m.id in user_progress %}
+                                                <i class="fas fa-check-circle text-success me-1"></i>
+                                            {% else %}
+                                                <i class="far fa-circle me-1"></i>
+                                            {% endif %}
+                                            {{ m.title }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="fw-bold mb-3">Your Progress</h5>
+                            {% with completed_count=user_progress.keys|length total_count=all_modules.count %}
+                                <div class="mb-2 d-flex justify-content-between">
+                                    <span>{{ completed_count }} of {{ total_count }} completed</span>
+                                    <span>{{ completed_count|floatformat:0|default:"0" }}%</span>
+                                </div>
+                                <div class="progress mb-3">
+                                    <div class="progress-bar progress-module"
+                                         role="progressbar"
+                                         aria-valuenow="{{ completed_count|floatformat:0|default:'0' }}"
+                                         aria-valuemin="0"
+                                         aria-valuemax="100"
+                                         data-width="{{ completed_count|floatformat:0|default:'0' }}"></div>
+                                </div>
+                                <script>
+                                    document.addEventListener('DOMContentLoaded', function() {
+                                        try {
+                                            const progressBar = document.querySelector('.progress-module');
+                                            if (progressBar) {
+                                                const width = progressBar.getAttribute('data-width') || '0';
+                                                progressBar.style.width = width + '%';
+                                            }
+                                        } catch (error) {
+                                            console.error('Error setting progress bar width:', error);
+                                        }
+                                    });
+                                </script>
+                            {% endwith %}
+                            <a href="{% url 'course_detail' course.id %}"
+                               class="btn btn-outline-primary w-100">
+                                <i class="fas fa-arrow-left me-1"></i> Back to Course
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Main Content -->
+                <div class="col-lg-9">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <div class="mb-4">{{ module.description|linebreaks }}</div>
+                            {% if not is_completed %}
+                                <form method="post" class="module-completion-form">
+                                    {% csrf_token %}
+                                    <button type="submit" name="mark_completed" class="btn btn-success">
+                                        <i class="fas fa-check me-1"></i> Mark as Completed
+                                    </button>
+                                </form>
+                            {% else %}
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle me-2"></i> You have completed this module!
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- Module Navigation -->
+                    <div class="d-flex justify-content-between">
+                        {% with prev_module=all_modules.0 next_module=all_modules.1 %}
+                            {% if prev_module and prev_module.id != module.id %}
+                                <a href="{% url 'module_detail' course.id prev_module.id %}"
+                                   class="btn btn-outline-primary">
+                                    <i class="fas fa-arrow-left me-1"></i> Previous: {{ prev_module.title }}
+                                </a>
+                            {% else %}
+                                <!-- No previous module -->
+                            {% endif %}
+                            {% if next_module %}
+                                <a href="{% url 'module_detail' course.id next_module.id %}"
+                                   class="btn btn-primary">
+                                    Next: {{ next_module.title }} <i class="fas fa-arrow-right ms-1"></i>
+                                </a>
+                            {% else %}
+                                <a href="{% url 'course_detail' course.id %}" class="btn btn-primary">
+                                    Complete Course <i class="fas fa-flag-checkered ms-1"></i>
+                                </a>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

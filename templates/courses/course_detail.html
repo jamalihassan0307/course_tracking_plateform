@@ -1,0 +1,546 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ course.title }} - CourseTrack{% endblock %}
+{% block extra_css %}
+    <style>
+    .course-header {
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.9), rgba(58, 12, 163, 0.85));
+        padding: 6rem 0 3rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .course-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('{% static "images/pattern-dots.svg" %}') repeat;
+        opacity: 0.1;
+        z-index: 0;
+    }
+    
+    .course-content {
+        position: relative;
+        z-index: 1;
+    }
+    
+    .course-img {
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.2);
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .course-stats {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 1rem;
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .course-stats-item {
+        display: flex;
+        align-items: center;
+        margin-right: 1.5rem;
+    }
+    
+    .course-stats-icon {
+        width: 40px;
+        height: 40px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.75rem;
+    }
+    
+    .module-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .module-item {
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.3s ease;
+        border-left: 3px solid transparent;
+    }
+    
+    .module-item:hover {
+        background-color: rgba(67, 97, 238, 0.05);
+        border-left-color: #4361ee;
+    }
+    
+    .module-item.locked {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+    
+    .module-item.locked i {
+        color: #dc3545;
+    }
+    
+    .instructor-card {
+        border-radius: 1rem;
+        overflow: hidden;
+        border: none;
+    }
+    
+    .instructor-img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid white;
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.1);
+    }
+    
+    .review-card {
+        border-radius: 1rem;
+        overflow: hidden;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    
+    .review-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.1)!important;
+    }
+    
+    .rating .fas.fa-star {
+        color: #ffc107;
+    }
+    
+    .rating .far.fa-star {
+        color: #e0e0e0;
+    }
+    
+    .guest-prompt {
+        background: linear-gradient(135deg, rgba(67, 97, 238, 0.05), rgba(58, 12, 163, 0.1));
+        border-radius: 1rem;
+        padding: 2rem;
+        margin: 2rem 0;
+        border: 1px dashed rgba(67, 97, 238, 0.3);
+    }
+    
+    .guest-prompt-icon {
+        font-size: 2.5rem;
+        color: #4361ee;
+        margin-bottom: 1rem;
+    }
+    
+    .content-blur {
+        filter: blur(3px);
+        pointer-events: none;
+        user-select: none;
+        opacity: 0.7;
+    }
+    
+    .locked-content {
+        position: relative;
+    }
+    
+    .locked-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.8);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+        border-radius: 1rem;
+    }
+    
+    .enrollment-icon {
+        font-size: 3rem;
+    }
+    
+    .instructor-img {
+        width: 80px;
+        height: 80px;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+    <!-- Course Header -->
+    <section class="course-header">
+        <div class="container course-content">
+            <div class="row align-items-center">
+                <div class="col-lg-7 mb-4 mb-lg-0">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'home' %}" class="text-white-50">Home</a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'course_list' %}" class="text-white-50">Courses</a>
+                            </li>
+                            <li class="breadcrumb-item active text-white" aria-current="page">{{ course.title }}</li>
+                        </ol>
+                    </nav>
+                    <h1 class="display-5 fw-bold mb-3">{{ course.title }}</h1>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="rating me-2">
+                            {% if avg_rating %}
+                                {% for i in "12345" %}
+                                    {% if forloop.counter <= avg_rating|floatformat:"0" %}
+                                        <i class="fas fa-star"></i>
+                                    {% else %}
+                                        <i class="far fa-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="ms-1 text-white-50">({{ avg_rating|floatformat:"1" }})</span>
+                            {% else %}
+                                <span class="text-white-50">No ratings yet</span>
+                            {% endif %}
+                        </div>
+                        <span class="text-white-50 ms-3">
+                            <i class="fas fa-users me-1"></i> {{ course.enrollments.count }} students enrolled
+                        </span>
+                    </div>
+                    <p class="lead mb-4 opacity-90">{{ course.description }}</p>
+                    <div class="d-flex align-items-center mb-3">
+                        {% if course.instructor.profile.profile_image %}
+                            <img src="{{ course.instructor.profile.profile_image.url }}"
+                                 alt="{{ course.instructor.username }}"
+                                 class="rounded-circle me-2"
+                                 width="40"
+                                 height="40">
+                        {% else %}
+                            <img src="{% static 'images/default-profile.png' %}"
+                                 alt="{{ course.instructor.username }}"
+                                 class="rounded-circle me-2"
+                                 width="40"
+                                 height="40">
+                        {% endif %}
+                        <span class="text-white-50">
+                            Instructor: <span class="text-white">{{ course.instructor.username }}</span>
+                        </span>
+                    </div>
+                    <div class="course-stats d-flex flex-wrap">
+                        <div class="course-stats-item">
+                            <div class="course-stats-icon">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold text-white">{{ modules.count }} modules</div>
+                                <div class="small text-white-50">Structured learning</div>
+                            </div>
+                        </div>
+                        <div class="course-stats-item">
+                            <div class="course-stats-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold text-white">Self-paced</div>
+                                <div class="small text-white-50">Learn at your own speed</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    {% if course.thumbnail %}
+                        <img src="{{ course.thumbnail.url }}"
+                             alt="{{ course.title }}"
+                             class="course-img img-fluid"
+                             width="600"
+                             height="400">
+                    {% else %}
+                        <img src="{% static 'images/default-course.jpg' %}"
+                             alt="{{ course.title }}"
+                             class="course-img img-fluid"
+                             width="600"
+                             height="400">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Course Content -->
+    <section class="py-5">
+        <div class="container">
+            {% if is_guest %}
+                <div class="guest-prompt text-center" data-aos="fade-up">
+                    <div class="guest-prompt-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h3 class="fw-bold mb-3">Limited Access</h3>
+                    <p class="mb-4">
+                        You're currently viewing this course as a guest. Sign in to access all course modules, enroll in the course, and interact with course content.
+                    </p>
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="{% url 'login' %}?next={{ request.path }}"
+                           class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                        </a>
+                        <a href="{% url 'register' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-plus me-2"></i>Register
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="row">
+                <!-- Left Column: Course Content -->
+                <div class="col-lg-8 mb-5 mb-lg-0">
+                    <!-- Modules Section -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <h3 class="fw-bold mb-4">Course Content</h3>
+                            {% if modules %}
+                                <div class="module-list">
+                                    {% for module in modules %}
+                                        <div class="module-item {% if is_guest and forloop.counter > 1 %}locked{% endif %}">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h5 class="mb-1">
+                                                        {% if is_guest and forloop.counter > 1 %}
+                                                            <i class="fas fa-lock me-2"></i>
+                                                        {% else %}
+                                                            <i class="fas fa-play-circle me-2 text-primary"></i>
+                                                        {% endif %}
+                                                        {{ module.title }}
+                                                    </h5>
+                                                    {% if not is_guest or forloop.counter == 1 %}
+                                                        <p class="text-muted mb-0 small">{{ module.description|truncatechars:100 }}</p>
+                                                    {% else %}
+                                                        <p class="text-muted mb-0 small">Sign in to view this module</p>
+                                                    {% endif %}
+                                                </div>
+                                                {% if is_guest and forloop.counter > 1 %}
+                                                    <span class="badge bg-secondary">Locked</span>
+                                                {% elif is_enrolled %}
+                                                    <a href="{% url 'module_detail' course.id module.id %}"
+                                                       class="btn btn-sm btn-primary">Start Module</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                {% if is_guest and modules.count > 1 %}
+                                    <div class="text-center mt-4">
+                                        <p class="text-muted">Sign in to access all {{ modules.count }} modules</p>
+                                        <a href="{% url 'login' %}?next={{ request.path }}"
+                                           class="btn btn-primary">
+                                            <i class="fas fa-sign-in-alt me-2"></i>Sign In to Continue
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <p class="text-muted">No modules available for this course yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- Reviews Section -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h3 class="fw-bold mb-0">Student Reviews</h3>
+                                {% if reviews %}<span class="badge bg-primary rounded-pill px-3 py-2">{{ reviews.count }} Reviews</span>{% endif %}
+                            </div>
+                            {% if reviews %}
+                                <div class="reviews">
+                                    {% for review in reviews %}
+                                        {% if not is_guest or forloop.counter <= 2 %}
+                                            <div class="review-card card mb-3 shadow-sm">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <div class="d-flex align-items-center">
+                                                            {% if review.user.profile.profile_image %}
+                                                                <img src="{{ review.user.profile.profile_image.url }}"
+                                                                     alt="{{ review.user.username }}"
+                                                                     class="rounded-circle me-2"
+                                                                     width="40"
+                                                                     height="40">
+                                                            {% else %}
+                                                                <img src="{% static 'images/default-profile.png' %}"
+                                                                     alt="{{ review.user.username }}"
+                                                                     class="rounded-circle me-2"
+                                                                     width="40"
+                                                                     height="40">
+                                                            {% endif %}
+                                                            <div>
+                                                                <h6 class="mb-0 fw-bold">{{ review.user.username }}</h6>
+                                                                <div class="text-muted small">{{ review.created_at|date:"M d, Y" }}</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="rating">
+                                                            {% for i in "12345" %}
+                                                                {% if forloop.counter <= review.rating %}
+                                                                    <i class="fas fa-star"></i>
+                                                                {% else %}
+                                                                    <i class="far fa-star"></i>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </div>
+                                                    <p class="mb-0">{{ review.comment }}</p>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                {% if is_guest and reviews.count > 2 %}
+                                    <div class="text-center mt-4">
+                                        <p class="text-muted">Sign in to read all {{ reviews.count }} reviews</p>
+                                        <a href="{% url 'login' %}?next={{ request.path }}"
+                                           class="btn btn-primary">
+                                            <i class="fas fa-sign-in-alt me-2"></i>Sign In to See More
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <p class="text-muted">No reviews yet. Be the first to review this course!</p>
+                            {% endif %}
+                            {% if not is_guest and is_enrolled and not user_review %}
+                                <div class="mt-4">
+                                    <h5 class="fw-bold mb-3">Leave a Review</h5>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="review_submit" value="1">
+                                        <div class="mb-3">
+                                            <label for="id_rating" class="form-label">Rating</label>
+                                            <select name="rating" class="form-select" id="id_rating" required>
+                                                <option value="" selected disabled>Select rating</option>
+                                                <option value="5">5 - Excellent</option>
+                                                <option value="4">4 - Very Good</option>
+                                                <option value="3">3 - Good</option>
+                                                <option value="2">2 - Fair</option>
+                                                <option value="1">1 - Poor</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="id_comment" class="form-label">Comment</label>
+                                            <textarea name="comment" class="form-control" id="id_comment" rows="3" required></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <!-- Right Column: Enrollment & Instructor -->
+                <div class="col-lg-4">
+                    <!-- Enrollment Card -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            {% if is_guest %}
+                                <div class="text-center py-3">
+                                    <div class="mb-3">
+                                        <i class="fas fa-user-graduate text-primary enrollment-icon"></i>
+                                    </div>
+                                    <h4 class="fw-bold mb-3">Ready to Enroll?</h4>
+                                    <p class="mb-4">Sign in to enroll in this course and start learning today.</p>
+                                    <a href="{% url 'login' %}?next={{ request.path }}"
+                                       class="btn btn-primary btn-lg w-100">
+                                        <i class="fas fa-sign-in-alt me-2"></i>Sign In to Enroll
+                                    </a>
+                                </div>
+                            {% elif is_enrolled %}
+                                <div class="text-center py-3">
+                                    <div class="mb-3">
+                                        <i class="fas fa-check-circle text-success enrollment-icon"></i>
+                                    </div>
+                                    <h4 class="fw-bold mb-3">You're Enrolled!</h4>
+                                    <p class="mb-4">Continue your learning journey by accessing the course modules.</p>
+                                    {% if modules %}
+                                        <a href="{% url 'module_detail' course.id modules.0.id %}"
+                                           class="btn btn-success btn-lg w-100">
+                                            <i class="fas fa-play-circle me-2"></i>Start Learning
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            {% elif has_requested_enrollment %}
+                                <div class="text-center py-3">
+                                    <div class="mb-3">
+                                        <i class="fas fa-hourglass-half text-warning enrollment-icon"></i>
+                                    </div>
+                                    <h4 class="fw-bold mb-3">Enrollment Pending</h4>
+                                    <p class="mb-4">Your enrollment request has been submitted and is awaiting approval from the instructor.</p>
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>You'll receive a notification once your request is approved.
+                                    </div>
+                                </div>
+                            {% elif can_enroll %}
+                                <div class="text-center py-3">
+                                    <h4 class="fw-bold mb-3">Enroll in this Course</h4>
+                                    <p class="mb-4">Join {{ course.enrollments.count }} other students in this course.</p>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="enrollment_request" value="1">
+                                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                                            <i class="fas fa-user-plus me-2"></i>Request Enrollment
+                                        </button>
+                                    </form>
+                                </div>
+                            {% else %}
+                                <div class="text-center py-3">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>Only students can enroll in courses.
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- Instructor Card -->
+                    <div class="card border-0 shadow-sm mb-4 instructor-card">
+                        <div class="card-body p-4 text-center">
+                            <h4 class="fw-bold mb-3">About the Instructor</h4>
+                            {% if course.instructor.profile.profile_image %}
+                                <img src="{{ course.instructor.profile.profile_image.url }}"
+                                     alt="{{ course.instructor.username }}"
+                                     class="instructor-img mb-3"
+                                     width="80"
+                                     height="80">
+                            {% else %}
+                                <img src="{% static 'images/default-profile.png' %}"
+                                     alt="{{ course.instructor.username }}"
+                                     class="instructor-img mb-3"
+                                     width="80"
+                                     height="80">
+                            {% endif %}
+                            <h5 class="fw-bold">{{ course.instructor.username }}</h5>
+                            <p class="text-muted">{{ course.instructor.email }}</p>
+                            {% if course.instructor.profile.bio %}<p>{{ course.instructor.profile.bio|truncatechars:150 }}</p>{% endif %}
+                        </div>
+                    </div>
+                    <!-- Admin Options -->
+                    {% if user.is_authenticated and user.is_superuser or user.userprofile.role == 'admin' %}
+                        <div class="card border-0 shadow-sm mb-4">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold mb-3">Admin Options</h5>
+                                <div class="d-grid gap-2">
+                                    <a href="{% url 'update_course' course.id %}"
+                                       class="btn btn-outline-primary">
+                                        <i class="fas fa-edit me-1"></i> Edit Course
+                                    </a>
+                                    <a href="{% url 'create_module' course.id %}"
+                                       class="btn btn-outline-primary">
+                                        <i class="fas fa-plus me-1"></i> Add Module
+                                    </a>
+                                    <a href="{% url 'delete_course' course.id %}"
+                                       class="btn btn-outline-danger">
+                                        <i class="fas fa-trash me-1"></i> Delete Course
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
