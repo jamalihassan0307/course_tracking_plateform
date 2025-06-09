@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-nr91-mwa4*x7f9-^@e1ar&4a@1jswy1eq7x75z(--=q)bxbe*c'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'jamalihassan0307.pythonanywhere.com',
@@ -34,15 +34,16 @@ ALLOWED_HOSTS = [
 ]
 
 # Security settings for production
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = 'DENY'
-SECURE_HSTS_SECONDS = 31536000  # 1 year
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SECURE_HSTS_PRELOAD = True
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
 
 
@@ -57,7 +58,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'social_django',
-    'courses.apps.CoursesConfig',
+    'courses',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -202,29 +205,17 @@ SOCIAL_AUTH_PIPELINE = (
     # there's any collision.
     'social_core.pipeline.user.get_username',
 
-    # Send a validation email to the user to verify its email address.
-    # Disabled by default.
-    # 'social_core.pipeline.mail.mail_validation',
-
-    # Associates the current social details with another user account with
-    # a similar email address. 
-    'social_core.pipeline.social_auth.associate_by_email',
-
     # Create a user account if we haven't found one yet.
     'social_core.pipeline.user.create_user',
 
     # Create the record that associates the social account with the user.
     'social_core.pipeline.social_auth.associate_user',
 
-    # Populate the extra_data field in the social record with the values
-    # specified by settings (and the default ones like access_token, etc).
-    'social_core.pipeline.social_auth.load_extra_data',
+    # Create user profile
+    'courses.pipelines.create_user_profile',
 
     # Get the user's profile picture and other details from the provider
     'courses.pipelines.get_avatar',
-
-    # Create or update user profile
-    'courses.pipelines.create_user_profile',
 
     # Update user model with data from social provider
     'courses.pipelines.update_user_social_data',
@@ -255,3 +246,19 @@ LOGOUT_REDIRECT_URL = 'login'
 # Social Auth Error Handling
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/login/'
 SOCIAL_AUTH_RAISE_EXCEPTIONS = False
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.MultiPartParser',
+        'rest_framework.parsers.FormParser',
+    ],
+}
