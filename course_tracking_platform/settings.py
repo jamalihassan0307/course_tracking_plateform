@@ -13,17 +13,17 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+
+
+
 SECRET_KEY = 'django-insecure-nr91-mwa4*x7f9-^@e1ar&4a@1jswy1eq7x75z(--=q)bxbe*c'
 
-# SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = True
 
 ALLOWED_HOSTS = [
@@ -33,7 +33,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
-# Security settings for production
+
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
@@ -41,13 +41,13 @@ if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
-    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_SECONDS = 31536000  
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
 
 
-# Application definition
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -95,8 +95,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'course_tracking_platform.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
+
+
 
 DATABASES = {
     'default': {
@@ -106,8 +106,8 @@ DATABASES = {
 }
 
 
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
+
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -125,8 +125,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
+
+
 
 LANGUAGE_CODE = 'en-us'
 
@@ -137,27 +137,27 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
+
+
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
-# Media files
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Login redirect
+
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
 
 
-# Social Auth Configuration
+
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '379082405098-mhbh820to4mtubdv20ikjq1fard51ker.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
 
@@ -166,7 +166,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
-# Social Auth Settings
+
 SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
     'email',
     'profile',
@@ -177,73 +177,73 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
     'prompt': 'select_account'
 }
 
-# Social Auth Pipeline
+
 SOCIAL_AUTH_PIPELINE = (
-    # Get the information we can about the user and return it in a simple
-    # format to create the user instance later. In some cases the details are
-    # already part of the auth response from the provider, but sometimes this
-    # could hit a provider API.
+    
+    
+    
+    
     'social_core.pipeline.social_auth.social_details',
 
-    # Get the social uid from whichever service we're authing thru. The uid is
-    # the unique identifier of the given user in the provider.
+    
+    
     'social_core.pipeline.social_auth.social_uid',
 
-    # Verifies that the current auth process is valid within the current
-    # project, this is where emails and domains whitelists are applied (if
-    # defined).
+    
+    
+    
     'social_core.pipeline.social_auth.auth_allowed',
     
-    # This function checks if there's a domain whitelist defined, and if the
-    # current user's email domain is in it. Custom domain check.
+    
+    
     'courses.pipelines.check_email_domain',
 
-    # Checks if the current social-account is already associated in the site.
+    
     'social_core.pipeline.social_auth.social_user',
 
-    # Make up a username for this person, appends a random string at the end if
-    # there's any collision.
+    
+    
     'social_core.pipeline.user.get_username',
 
-    # Create a user account if we haven't found one yet.
+    
     'social_core.pipeline.user.create_user',
 
-    # Create the record that associates the social account with the user.
+    
     'social_core.pipeline.social_auth.associate_user',
 
-    # Create user profile
+    
     'courses.pipelines.create_user_profile',
 
-    # Get the user's profile picture and other details from the provider
+    
     'courses.pipelines.get_avatar',
 
-    # Update user model with data from social provider
+    
     'courses.pipelines.update_user_social_data',
 
-    # Optional: Set user role based on criteria
+    
     'courses.pipelines.set_user_role',
 
-    # Handle any exceptions during the process
+    
     'courses.pipelines.handle_social_auth_exception',
 
-    # Update the user record with any changed info from the auth service.
+    
     'social_core.pipeline.user.user_details',
 )
 
-# Session Settings
+
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds
+SESSION_COOKIE_AGE = 1209600  
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_SECURE = True
 
-# Login Settings
+
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'login'
 
-# Social Auth Error Handling
+
 SOCIAL_AUTH_LOGIN_ERROR_URL = '/login/'
 SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 

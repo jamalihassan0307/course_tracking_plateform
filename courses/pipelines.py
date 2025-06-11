@@ -9,8 +9,10 @@ def get_avatar(backend, response, user=None, *args, **kwargs):
     """
     if backend.name == 'google-oauth2':
         if response.get('picture'):
-            user.profile.avatar_url = response['picture']
-            user.profile.save()
+            # Ensure profile exists
+            profile, created = Profile.objects.get_or_create(user=user)
+            profile.avatar_url = response['picture']
+            profile.save()
 
 def create_user_profile(backend, user, response, *args, **kwargs):
     """
