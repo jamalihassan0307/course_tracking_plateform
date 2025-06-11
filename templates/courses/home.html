@@ -231,17 +231,17 @@
                     </div>
                     <div class="mt-4 d-flex align-items-center">
                         <div class="d-flex">
-                            <img src="https://randomuser.me/api/portraits/men/32.jpg"
+                            <img src="{% static 'images/image.jpg' %}"
                                  alt="Student"
                                  class="rounded-circle border border-3 border-white"
                                  width="40"
                                  height="40">
-                            <img src="https://randomuser.me/api/portraits/women/44.jpg"
+                            <img src="{% static 'images/image.jpg' %}"
                                  alt="Student"
                                  class="rounded-circle border border-3 border-white ms-n2"
                                  width="40"
                                  height="40">
-                            <img src="https://randomuser.me/api/portraits/men/67.jpg"
+                            <img src="{% static 'images/image.jpg' %}"
                                  alt="Student"
                                  class="rounded-circle border border-3 border-white ms-n2"
                                  width="40"
@@ -415,92 +415,7 @@
             </div>
         </div>
     </section>
-    <!-- Testimonials Section -->
-    <section class="py-5 my-3">
-        <div class="container">
-            <h2 class="section-title fw-bold mb-5 text-center">What Our Students Say</h2>
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <div id="testimonialsCarousel"
-                         class="carousel slide"
-                         data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <div class="testimonial-card p-4 shadow-sm">
-                                    <div class="d-flex align-items-center mb-4">
-                                        <img src="https://randomuser.me/api/portraits/women/65.jpg"
-                                             alt="Student"
-                                             class="rounded-circle shadow-sm"
-                                             width="70"
-                                             height="70">
-                                        <div class="ms-3">
-                                            <h5 class="mb-1 fw-bold">Sarah Johnson</h5>
-                                            <div class="rating mb-1">
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                            </div>
-                                            <span class="badge bg-light text-primary">Marketing Professional</span>
-                                        </div>
-                                    </div>
-                                    <p class="testimonial-quote lead mb-0">
-                                        "CourseTrack has transformed my career. The courses are well-structured and the instructors are incredibly knowledgeable. I've gained skills that I use every day at work."
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="testimonial-card p-4 shadow-sm">
-                                    <div class="d-flex align-items-center mb-4">
-                                        <img src="https://randomuser.me/api/portraits/men/22.jpg"
-                                             alt="Student"
-                                             class="rounded-circle shadow-sm"
-                                             width="70"
-                                             height="70">
-                                        <div class="ms-3">
-                                            <h5 class="mb-1 fw-bold">Michael Chen</h5>
-                                            <div class="rating mb-1">
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star-half-alt"></i>
-                                            </div>
-                                            <span class="badge bg-light text-primary">Software Engineer</span>
-                                        </div>
-                                    </div>
-                                    <p class="testimonial-quote lead mb-0">
-                                        "The quality of instruction on CourseTrack is outstanding. I was able to learn new programming languages and frameworks that directly led to a promotion at work."
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-center mt-4">
-                            <button class="carousel-control-prev position-relative mx-2"
-                                    type="button"
-                                    data-bs-target="#testimonialsCarousel"
-                                    data-bs-slide="prev">
-                                <span class="btn btn-primary btn-sm rounded-circle">
-                                    <i class="fas fa-chevron-left"></i>
-                                </span>
-                                <span class="visually-hidden">Previous</span>
-                            </button>
-                            <button class="carousel-control-next position-relative mx-2"
-                                    type="button"
-                                    data-bs-target="#testimonialsCarousel"
-                                    data-bs-slide="next">
-                                <span class="btn btn-primary btn-sm rounded-circle">
-                                    <i class="fas fa-chevron-right"></i>
-                                </span>
-                                <span class="visually-hidden">Next</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+   
     <!-- Call to Action -->
     <section class="py-5 cta-section text-white position-relative">
         <div class="container text-center position-relative cta-content">
