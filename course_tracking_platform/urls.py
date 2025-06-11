@@ -22,8 +22,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('courses.urls')),
-    path('api/', include('courses.api_urls')),
-    path('social-auth/', include('social_django.urls', namespace='social')),
+    path('api/', include('courses.api_urls'))
 ]
 
 # Serve media files in development
