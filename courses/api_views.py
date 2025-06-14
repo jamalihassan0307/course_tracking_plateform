@@ -238,6 +238,7 @@ def enroll_course(request, pk):
 
 # Module Views
 @api_view(['POST'])
+@parser_classes([JSONParser]) 
 
 def create_module(request):
     if not is_admin(request.user):
