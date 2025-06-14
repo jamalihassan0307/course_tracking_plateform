@@ -344,10 +344,9 @@ def create_review(request, course_id):
     
     serializer = ReviewSerializer(data=data)
     if serializer.is_valid():
-        serializer.save(user=request.user, course=course)
+        serializer.save(user=request.user)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 def get_reviews(request):
