@@ -84,6 +84,8 @@ def register_view(request):
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
 def create_user(request):
+    if not is_admin(request.user):
+        return Response({'error': 'Only admins can create users'}, status=status.HTTP_403_FORBIDDEN)
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
         user = serializer.save()
