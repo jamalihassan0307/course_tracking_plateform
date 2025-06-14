@@ -333,11 +333,18 @@ def get_user_progress(request):
 
 # Review Views
 @api_view(['POST'])
-
-def create_review(request):
-    serializer = ReviewSerializer(data=request.data)
+def create_review(request, course_id):
+    try:
+        course = Course.objects.get(pk=course_id)
+    except Course.DoesNotExist:
+        return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    data = request.data.copy()
+    data['course'] = course_id  # Add course ID to the data
+    
+    serializer = ReviewSerializer(data=data)
     if serializer.is_valid():
-        serializer.save(user=request.user)
+        serializer.save(user=request.user, course=course)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
