@@ -12,6 +12,32 @@ from .serializers import (
     EnrollmentSerializer, UserProgressSerializer, ReviewSerializer
 )
 
+# Utility Functions
+def get_user_token(request):
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return None
+    
+    try:
+        token = auth_header.split(' ')[1]
+        user = Token.objects.get(key=token).user
+        return user
+    except (IndexError, Token.DoesNotExist):
+        return None
+
+def is_valid_token(request):
+    user = get_user_token(request)
+    return user is not None
+
+def is_admin(user):
+    return user.is_staff if user else False
+
+def get_user_or_error(request):
+    user = get_user_token(request)
+    if not user:
+        return Response({'error': 'Invalid or missing token'}, status=status.HTTP_401_UNAUTHORIZED)
+    return user
+
 # Authentication Views
 @api_view(['GET', 'POST'])
 @permission_classes([permissions.AllowAny])
@@ -71,14 +97,27 @@ def create_user(request):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def get_users(request):
+    if not is_admin(request.user):
+        return Response({'error': 'Admin access required'}, status=status.HTTP_403_FORBIDDEN)
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def get_user_by_token(request):
+    user = get_user_or_error(request)
+    if isinstance(user, Response):
+        return user
+    serializer = UserSerializer(user)
     return Response(serializer.data)
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([permissions.IsAuthenticated])
 def user_detail(request, pk):
     user = get_object_or_404(User, pk=pk)
+    if not is_admin(request.user) and request.user != user:
+        return Response({'error': 'Not authorized'}, status=status.HTTP_403_FORBIDDEN)
     
     if request.method == 'GET':
         serializer = UserSerializer(user)
@@ -143,6 +182,9 @@ def profile_detail(request, pk):
 @parser_classes([MultiPartParser, FormParser])
 @permission_classes([permissions.IsAuthenticated])
 def create_course(request):
+    if not is_admin(request.user):
+        return Response({'error': 'Only admins can create courses'}, status=status.HTTP_403_FORBIDDEN)
+    
     serializer = CourseSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save(instructor=request.user)
@@ -150,19 +192,19 @@ def create_course(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-@permission_classes([permissions.AllowAny])  # Allow public access to course list
+@permission_classes([permissions.AllowAny])
 def get_courses(request):
-    if request.user.is_authenticated and request.user.is_staff:
+    if request.user.is_authenticated and is_admin(request.user):
         courses = Course.objects.all()
     elif request.user.is_authenticated:
         courses = Course.objects.filter(instructor=request.user)
     else:
-        courses = Course.objects.all()[:6]  # Limit for non-authenticated users
+        courses = Course.objects.all()[:6]
     serializer = CourseSerializer(courses, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
-@permission_classes([permissions.AllowAny])  # Allow public access to course details
+@permission_classes([permissions.AllowAny])
 def course_detail(request, pk):
     course = get_object_or_404(Course, pk=pk)
     serializer = CourseSerializer(course)
@@ -187,6 +229,9 @@ def enroll_course(request, pk):
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
 def create_module(request):
+    if not is_admin(request.user):
+        return Response({'error': 'Only admins can create modules'}, status=status.HTTP_403_FORBIDDEN)
+    
     serializer = ModuleSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -196,7 +241,7 @@ def create_module(request):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def get_modules(request):
-    if request.user.is_staff:
+    if is_admin(request.user):
         modules = Module.objects.all()
     else:
         modules = Module.objects.filter(course__instructor=request.user)
@@ -207,8 +252,8 @@ def get_modules(request):
 @permission_classes([permissions.IsAuthenticated])
 def module_detail(request, pk):
     module = get_object_or_404(Module, pk=pk)
-    if not request.user.is_staff and module.course.instructor != request.user:
-        return Response(status=status.HTTP_403_FORBIDDEN)
+    if not is_admin(request.user) and module.course.instructor != request.user:
+        return Response({'error': 'Not authorized'}, status=status.HTTP_403_FORBIDDEN)
     
     if request.method == 'GET':
         serializer = ModuleSerializer(module)
@@ -229,7 +274,7 @@ def module_detail(request, pk):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def get_enrollments(request):
-    if request.user.is_staff:
+    if is_admin(request.user):
         enrollments = Enrollment.objects.all()
     else:
         enrollments = Enrollment.objects.filter(student=request.user)
@@ -240,7 +285,7 @@ def get_enrollments(request):
 @permission_classes([permissions.IsAuthenticated])
 def approve_enrollment(request, pk):
     enrollment = get_object_or_404(Enrollment, pk=pk)
-    if request.user != enrollment.course.instructor and not request.user.is_staff:
+    if not is_admin(request.user) and request.user != enrollment.course.instructor:
         return Response({'error': 'Not authorized'}, status=status.HTTP_403_FORBIDDEN)
     
     enrollment.is_approved = True
@@ -267,7 +312,7 @@ def mark_module_completed(request):
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def get_user_progress(request):
-    if request.user.is_staff:
+    if is_admin(request.user):
         progress = UserProgress.objects.all()
     else:
         progress = UserProgress.objects.filter(user=request.user)
@@ -285,6 +330,7 @@ def create_review(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
+@permission_classes([permissions.AllowAny])
 def get_reviews(request):
     reviews = Review.objects.all()
     serializer = ReviewSerializer(reviews, many=True)
@@ -294,8 +340,8 @@ def get_reviews(request):
 @permission_classes([permissions.IsAuthenticated])
 def review_detail(request, pk):
     review = get_object_or_404(Review, pk=pk)
-    if not request.user.is_staff and review.user != request.user:
-        return Response(status=status.HTTP_403_FORBIDDEN)
+    if not is_admin(request.user) and review.user != request.user:
+        return Response({'error': 'Not authorized'}, status=status.HTTP_403_FORBIDDEN)
     
     if request.method == 'GET':
         serializer = ReviewSerializer(review)

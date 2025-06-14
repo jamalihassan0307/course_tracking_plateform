@@ -3,7 +3,7 @@ from .api_views import (
     # Auth views
     login_view, register_view,
     # User views
-    create_user, get_users, user_detail,
+    create_user, get_users, user_detail,get_user_by_token,
     # Profile views
     create_profile, get_profiles, profile_detail,
     # Course views
@@ -25,6 +25,7 @@ urlpatterns = [
     
     # User URLs
     path('users/', get_users, name='user-list'),
+    path('users/getuserbytoken/', get_user_by_token, name='user-getuserbytoken'),
     path('users/create/', create_user, name='user-create'),
     path('users/<int:pk>/', user_detail, name='user-detail'),
     
