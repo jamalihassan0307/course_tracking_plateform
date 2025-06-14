@@ -97,7 +97,7 @@ def create_user(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
+
 def get_users(request):
     if not is_admin(request.user):
         return Response({'error': 'Admin access required'}, status=status.HTTP_403_FORBIDDEN)
@@ -115,7 +115,7 @@ def get_user_by_token(request):
     return Response(serializer.data)
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([permissions.IsAuthenticated])
+
 def user_detail(request, pk):
     user = get_object_or_404(User, pk=pk)
     if not is_admin(request.user) and request.user != user:
@@ -139,7 +139,7 @@ def user_detail(request, pk):
 # Profile Views
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
-@permission_classes([permissions.IsAuthenticated])
+
 def create_profile(request):
     serializer = ProfileSerializer(data=request.data)
     if serializer.is_valid():
@@ -148,7 +148,7 @@ def create_profile(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
+
 def get_profiles(request):
     if request.user.is_staff:
         profiles = Profile.objects.all()
@@ -158,7 +158,7 @@ def get_profiles(request):
     return Response(serializer.data)
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([permissions.IsAuthenticated])
+
 def profile_detail(request, pk):
     profile = get_object_or_404(Profile, pk=pk)
     if not request.user.is_staff and profile.user != request.user:
@@ -182,7 +182,7 @@ def profile_detail(request, pk):
 # Course Views
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
-@permission_classes([permissions.IsAuthenticated])
+
 def create_course(request):
     if not is_admin(request.user):
         return Response({'error': 'Only admins can create courses'}, status=status.HTTP_403_FORBIDDEN)
@@ -213,7 +213,7 @@ def course_detail(request, pk):
     return Response(serializer.data)
 
 @api_view(['POST'])
-@permission_classes([permissions.IsAuthenticated])
+
 def enroll_course(request, pk):
     course = get_object_or_404(Course, pk=pk)
     if Enrollment.objects.filter(student=request.user, course=course).exists():
@@ -229,7 +229,7 @@ def enroll_course(request, pk):
 
 # Module Views
 @api_view(['POST'])
-@permission_classes([permissions.IsAuthenticated])
+
 def create_module(request):
     if not is_admin(request.user):
         return Response({'error': 'Only admins can create modules'}, status=status.HTTP_403_FORBIDDEN)
@@ -241,7 +241,7 @@ def create_module(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
+
 def get_modules(request):
     if is_admin(request.user):
         modules = Module.objects.all()
@@ -251,7 +251,7 @@ def get_modules(request):
     return Response(serializer.data)
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([permissions.IsAuthenticated])
+
 def module_detail(request, pk):
     module = get_object_or_404(Module, pk=pk)
     if not is_admin(request.user) and module.course.instructor != request.user:
@@ -274,7 +274,7 @@ def module_detail(request, pk):
 
 # Enrollment Views
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
+
 def get_enrollments(request):
     if is_admin(request.user):
         enrollments = Enrollment.objects.all()
@@ -284,7 +284,7 @@ def get_enrollments(request):
     return Response(serializer.data)
 
 @api_view(['POST'])
-@permission_classes([permissions.IsAuthenticated])
+
 def approve_enrollment(request, pk):
     enrollment = get_object_or_404(Enrollment, pk=pk)
     if not is_admin(request.user) and request.user != enrollment.course.instructor:
@@ -297,7 +297,7 @@ def approve_enrollment(request, pk):
 
 # Progress Views
 @api_view(['POST'])
-@permission_classes([permissions.IsAuthenticated])
+
 def mark_module_completed(request):
     module_id = request.data.get('module_id')
     if not module_id:
@@ -312,7 +312,7 @@ def mark_module_completed(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
+
 def get_user_progress(request):
     if is_admin(request.user):
         progress = UserProgress.objects.all()
@@ -323,7 +323,7 @@ def get_user_progress(request):
 
 # Review Views
 @api_view(['POST'])
-@permission_classes([permissions.IsAuthenticated])
+
 def create_review(request):
     serializer = ReviewSerializer(data=request.data)
     if serializer.is_valid():
@@ -339,7 +339,7 @@ def get_reviews(request):
     return Response(serializer.data)
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([permissions.IsAuthenticated])
+
 def review_detail(request, pk):
     review = get_object_or_404(Review, pk=pk)
     if not is_admin(request.user) and review.user != request.user:
