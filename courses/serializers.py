@@ -139,11 +139,12 @@ class UserProgressSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     course = CourseSerializer(read_only=True)
+    course_id = serializers.IntegerField(write_only=True)  
 
     class Meta:
         model = Review
-        fields = ['id', 'user', 'course', 'rating', 'comment', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        fields = ['id', 'user', 'course', 'course_id', 'rating', 'comment', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'course']
 
     def validate_rating(self, value):
         if value < 1 or value > 5:
