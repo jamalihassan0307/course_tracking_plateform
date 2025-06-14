@@ -55,6 +55,6 @@ urlpatterns = [
     
     # Review URLs
     path('reviews/', get_reviews, name='review-list'),
-    path('reviews/create/', create_review, name='review-create'),
+    path('api/courses/<int:course_id>/reviews/create/', create_review),
     path('reviews/<int:pk>/', review_detail, name='review-detail'),
 ] 

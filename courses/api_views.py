@@ -331,7 +331,6 @@ def get_user_progress(request):
     serializer = UserProgressSerializer(progress, many=True)
     return Response(serializer.data)
 
-# Review Views
 @api_view(['POST'])
 def create_review(request, course_id):
     try:
@@ -340,7 +339,7 @@ def create_review(request, course_id):
         return Response({"error": "Course not found"}, status=status.HTTP_404_NOT_FOUND)
     
     data = request.data.copy()
-    data['course'] = course_id  # Add course ID to the data
+    data['course'] = course_id 
     
     serializer = ReviewSerializer(data=data)
     if serializer.is_valid():
