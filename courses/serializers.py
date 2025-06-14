@@ -81,11 +81,7 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'thumbnail', 'created_at', 
                  'updated_at', 'instructor', 'modules', 'rating_avg', 'students_count']
         read_only_fields = ['id', 'created_at', 'updated_at'],
-        extra_kwargs = {
-            'title': {'required': True},
-            'description': {'required': True},
-        }
-
+    
 
 
     def get_rating_avg(self, obj):
