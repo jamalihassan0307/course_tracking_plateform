@@ -98,8 +98,9 @@ def create_user(request):
 
 @api_view(['GET'])
 
+@permission_classes([permissions.AllowAny])
 def get_users(request):
-    if not is_admin(request.user):
+    if not request.user.is_staff:  # Using built-in is_staff instead of is_admin
         return Response({'error': 'Admin access required'}, status=status.HTTP_403_FORBIDDEN)
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
@@ -139,14 +140,19 @@ def user_detail(request, pk):
 # Profile Views
 @api_view(['POST'])
 @parser_classes([MultiPartParser, FormParser])
-
 def create_profile(request):
-    serializer = ProfileSerializer(data=request.data)
+    if not request.user.is_staff:
+        return Response({'error': 'Admin access required'}, status=403)
+    
+    
+    data = request.data.copy()
+    data['user'] = request.user.id 
+    
+    serializer = ProfileSerializer(data=data)
     if serializer.is_valid():
-        serializer.save(user=request.user)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 @api_view(['GET'])
 
 def get_profiles(request):
@@ -187,9 +193,12 @@ def create_course(request):
     if not is_admin(request.user):
         return Response({'error': 'Only admins can create courses'}, status=status.HTTP_403_FORBIDDEN)
     
-    serializer = CourseSerializer(data=request.data)
+    data = request.data.copy()  # Make mutable
+    data['instructor'] = request.user.id  # Set instructor ID
+    
+    serializer = CourseSerializer(data=data)
     if serializer.is_valid():
-        serializer.save(instructor=request.user)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
